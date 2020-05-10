@@ -1,4 +1,4 @@
-# Copyright 2016 The Kubernetes Authors All rights reserved.
+# Copyright 2016 The Kubernetes Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,36 +14,10 @@
 
 FROM BASEIMAGE
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update -y \
-    && DEBIAN_FRONTEND=noninteractive apt-get -yy -q \
-    install \
-    iptables \
-    ethtool \
-    ca-certificates \
-    file \
-    util-linux \
-    socat \
-    curl \
-    && DEBIAN_FRONTEND=noninteractive apt-get autoremove -y \
-    && DEBIAN_FRONTEND=noninteractive apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# Cleanup all the soft links
+ADD binaries.tgz /usr/local/bin
 
-RUN cp /usr/bin/nsenter /nsenter
-
+# Copy the shell script
 COPY hyperkube /hyperkube
-RUN chmod a+rx /hyperkube
 
-COPY master-multi.json /etc/kubernetes/manifests-multi/master.json
-COPY kube-proxy.json /etc/kubernetes/manifests-multi/kube-proxy.json
-
-COPY master.json /etc/kubernetes/manifests/master.json
-COPY etcd.json /etc/kubernetes/manifests/etcd.json
-COPY kube-proxy.json /etc/kubernetes/manifests/kube-proxy.json
-
-COPY safe_format_and_mount /usr/share/google/safe_format_and_mount
-RUN chmod a+rx /usr/share/google/safe_format_and_mount
-
-COPY setup-files.sh /setup-files.sh
-RUN chmod a+rx /setup-files.sh
-
-COPY make-ca-cert.sh /make-ca-cert.sh
-RUN chmod a+x /make-ca-cert.sh
+ENTRYPOINT ["/hyperkube"]

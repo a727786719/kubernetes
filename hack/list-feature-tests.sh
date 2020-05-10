@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Copyright 2016 The Kubernetes Authors All rights reserved.
+# Copyright 2016 The Kubernetes Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,10 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# A single script that lists all of the [Feature:.+] tests in our e2e suite.
+# This script lists all of the [Feature:.+] tests in our e2e suite.
+# Usage: `hack/list-feature-tests.sh`.
+
 set -o errexit
 set -o nounset
 set -o pipefail
 
-KUBE_ROOT=$(dirname "${BASH_SOURCE}")/..
-grep "\[Feature:(.+?)\]" "${KUBE_ROOT}"/test/e2e/*.go -Poh | sort | uniq
+KUBE_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
+grep "\[Feature:\w+\]" "${KUBE_ROOT}"/test/e2e/**/*.go -Eoh | LC_ALL=C sort -u
